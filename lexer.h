@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <cctype>
-#include <iostream>
 #include <vector>
 
 struct Token {
@@ -13,7 +12,6 @@ struct Token {
 class Lexer {
 private:
   std::string source;
-  int pos;
   int line_counter;
   int column_counter;
   //telling the vector to store the token type

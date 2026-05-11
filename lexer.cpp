@@ -1,11 +1,11 @@
 #include "lexer.h"
+#include <iostream>
 
 using namespace std;
 
 
 Lexer::Lexer(string input){
   source = input;
-  pos = 0;
   line_counter = 0;
   column_counter = 0;
 }
@@ -14,9 +14,8 @@ Lexer::Lexer(string input){
 void Lexer::tokenize(){
   line_counter = 0;
 
-  for (int i = 0; i < source.length();){
+  for (size_t i = 0; i < source.length();){
     string word;
-    int start = i;
 
     if (isalpha(source[i])){
       while (isalpha(source[i])){
@@ -30,7 +29,6 @@ void Lexer::tokenize(){
       tokens.push_back(t);
       column_counter++;
       word = "";
-      start = i;
     }
 
     else if (isdigit(source[i])){
@@ -45,7 +43,6 @@ void Lexer::tokenize(){
       tokens.push_back(t);
       column_counter++;
       word = "";
-      start = i;
       }
 
     else if (source[i] == '\n'){
@@ -56,7 +53,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       word = "";
-      start = i;
       i++;
      }
 
@@ -71,7 +67,6 @@ void Lexer::tokenize(){
       tokens.push_back(t);
       column_counter++;
       word = "";
-      start = i;
       }
     
     else if (source[i] == '('){
@@ -82,7 +77,6 @@ void Lexer::tokenize(){
       tokens.push_back(t);
       column_counter++;
       word = "";
-      start = i;
       i++;
       }
 
@@ -93,7 +87,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -104,7 +97,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter = 0;
-      start = i;
       i++;
       }
 
@@ -115,7 +107,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -126,7 +117,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -137,7 +127,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -148,7 +137,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
     
@@ -159,7 +147,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -170,7 +157,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -181,7 +167,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -192,7 +177,6 @@ void Lexer::tokenize(){
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
-      start = i;
       i++;
       }
 
@@ -217,7 +201,7 @@ void Lexer::count_characters(){
   int char_counter = 0;
   int line_counter = 0;
   int operator_counter = 0;
-  for (int i = 0; i < source.length(); i++){
+  for (size_t i = 0; i < source.length(); i++){
       if (isalpha(source[i])){
         letter_counter++;
       }
@@ -263,10 +247,10 @@ void Lexer::count_tokens(){
       else if (tokens[k].type == "NEWLINE"){
         newline_counter++;
       }
-      else if (tokens[k].type == "SPACE"){
+      else if (tokens[k].type == "space"){
         space_token_counter++;
       }
-      else if (tokens[k].type == "OPERATOR"){
+      else if (tokens[k].type == "operator"){
         operator_token_counter++;
       }
       else{ 

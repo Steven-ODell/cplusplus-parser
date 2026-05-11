@@ -17,8 +17,11 @@ private:
   int current;
 public:
   Parser(const vector<Token>& tokens);
-  ASTnode parse_input();
+  vector<ASTnode> parse_input();
   vector<Token> stripWhitespaces();
   void print_clean_tokens();
+  ASTnode creat_tree();
   void print_all_tokens();
+  ASTnode check_variable_assignment(vector<Token>, int j);
+  void print_tree(ASTnode node, int depth);
 };

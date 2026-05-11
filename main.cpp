@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include "ast.h"
+#include <iostream>
 
 int main() {
   std::cout << "String to tokenize: " << std::endl;
@@ -19,13 +20,17 @@ int main() {
   Parser parser(lexer.getTokens());
 
   //clean the tokens of any white spaces or newlines
-  std::vector<Token> cleaned_tokens = parser.stripWhitespaces();
+  //std::vector<Token> cleaned_tokens = parser.stripWhitespaces();
   
+  parser.parse_input();
+
   //unneeded way to print the cleaned tokens
   //parser.print_clean_tokens();
 
   //print non clean tokens
-  parser.print_all_tokens();
+  //parser.print_all_tokens();
+  
+  parser.print_tree(parser.creat_tree(), 0);
 
   return 0;
 }

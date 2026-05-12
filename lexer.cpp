@@ -100,6 +100,28 @@ void Lexer::tokenize(){
       i++;
       }
 
+    else if (source[i] == '>' || source[i] == '<' || source[i] == '!'){
+      if (source[i+1] == '=') {
+      Token t;
+      t.type = "COMPARATOR";
+      t.value = string(1, source[i]) + string(1, source[i+1]);
+      t.index = column_counter;
+      tokens.push_back(t);
+      column_counter++;
+      i += 2;
+      }
+
+      else {
+      Token t;
+      t.type = "COMPARATOR";
+      t.value = string(1, source[i]);
+      t.index = column_counter;
+      tokens.push_back(t);
+      column_counter++;
+      i++;
+      }
+    }
+
     else if (source[i] == '='){
       Token t;
       t.type = "EQUALS";
@@ -169,6 +191,7 @@ void Lexer::tokenize(){
       column_counter++;
       i++;
       }
+
 
     else if (source[i] == '+' || source[i] == '-' || source[i] == '*' || source[i] == '/'){
       Token t;
@@ -247,10 +270,10 @@ void Lexer::count_tokens(){
       else if (tokens[k].type == "NEWLINE"){
         newline_counter++;
       }
-      else if (tokens[k].type == "space"){
+      else if (tokens[k].type == "SPACE"){
         space_token_counter++;
       }
-      else if (tokens[k].type == "operator"){
+      else if (tokens[k].type == "OPERATOR"){
         operator_token_counter++;
       }
       else{ 

@@ -3,8 +3,8 @@
 #include <iostream>
 
 int main() {
-  std::cout << "String to tokenize: " << std::endl;
-  std::string input_string = "result = obj.compute(5 + 3);\nfoo = bar;";
+  std::cout << "String to tokenize: " << "result = obj.compute(5 > 3);\nfoo = bar" << std::endl;
+  std::string input_string = "result = obj.compute(5 > 3);\nfoo = bar;";
   
   //load the string into the lexer
   Lexer lexer(input_string);
@@ -25,7 +25,7 @@ int main() {
   parser.parse_input();
 
   //unneeded way to print the cleaned tokens
-  //parser.print_clean_tokens();
+  parser.print_clean_tokens();
 
   //print non clean tokens
   //parser.print_all_tokens();

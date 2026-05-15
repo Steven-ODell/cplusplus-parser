@@ -17,13 +17,15 @@ private:
   int current;
 public:
   Parser(const vector<Token>& tokens);
-  vector<ASTnode> parse_input();
+  vector<ASTnode> parse_input(vector<Token>);
   vector<Token> stripWhitespaces();
-  void print_clean_tokens();
   ASTnode creat_tree();
-  ASTnode check_comparator(vector<Token> node, int j, int depth);
+  ASTnode check_operation(vector<Token>);
+  ASTnode check_assignment(vector<Token>);
+  ASTnode check_expression(vector<Token>);
+  ASTnode check_comparator(vector<Token>);
+  ASTnode check_function(vector<Token>);
+  void print_clean_tokens();
   void print_all_tokens();
-  ASTnode check_variable_assignment(vector<Token>, int j);
   void print_tree(ASTnode node, int depth);
-  int grab_current();
 };

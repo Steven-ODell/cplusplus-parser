@@ -18,7 +18,7 @@ private:
   std::vector<Token> tokens;
 public:
   Lexer(std::string input);
-  void tokenize();
+  std::vector<Token> tokenize();
   void count_characters();
   void count_tokens();
   const std::vector<Token>& getTokens() const;

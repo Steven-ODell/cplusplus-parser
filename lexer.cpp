@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ Lexer::Lexer(string input){
 }
 
 
-void Lexer::tokenize(){
+vector<Token> Lexer::tokenize(){
   line_counter = 0;
 
   for (size_t i = 0; i < source.length();){
@@ -23,7 +24,18 @@ void Lexer::tokenize(){
         i++;
       }
       Token t;
-      t.type = "LETTER";
+      if (word == "int" || word == "string" || word == "bool"){
+        t.type = "Keyword";
+      }
+      else if (word == "true" || word == "false") {
+        t.type = "BoolLiteral";
+      }
+      else if (word == "compute" || word == "count" || word == "add"){
+        t.type = "Function";
+      }
+      else {
+        t.type = "Identifier";
+      }
       t.value = word;
       t.index = column_counter;
       tokens.push_back(t);
@@ -37,7 +49,7 @@ void Lexer::tokenize(){
         i++;
       }
       Token t;
-      t.type = "NUMBER";
+      t.type = "Number";
       t.value = word;
       t.index = column_counter;
       tokens.push_back(t);
@@ -61,7 +73,7 @@ void Lexer::tokenize(){
         i++;
       }
       Token t;
-      t.type = "SPACE";
+      t.type = "Space";
       t.value = " ";
       t.index = column_counter;
       tokens.push_back(t);
@@ -92,7 +104,7 @@ void Lexer::tokenize(){
 
     else if (source[i] == ';'){
       Token t;
-      t.type = "SEMICOLON";
+      t.type = "EOL";
       t.value = ";";
       t.index = column_counter;
       tokens.push_back(t);
@@ -100,20 +112,28 @@ void Lexer::tokenize(){
       i++;
       }
 
-    else if (source[i] == '>' || source[i] == '<' || source[i] == '!'){
+    else if (source[i] == '>' || source[i] == '<' || source[i] == '!' || source[i] == '='){
       if (source[i+1] == '=') {
       Token t;
-      t.type = "COMPARATOR";
+      t.type = "Comparison";
       t.value = string(1, source[i]) + string(1, source[i+1]);
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
       i += 2;
       }
-
+      else if (source[i] == '='){
+        Token t;
+        t.type = "EQUALS";
+        t.value = "=";
+        t.index = column_counter;
+        tokens.push_back(t);
+        column_counter++;
+        i++;
+      }
       else {
       Token t;
-      t.type = "COMPARATOR";
+      t.type = "Comparison";
       t.value = string(1, source[i]);
       t.index = column_counter;
       tokens.push_back(t);
@@ -121,16 +141,6 @@ void Lexer::tokenize(){
       i++;
       }
     }
-
-    else if (source[i] == '='){
-      Token t;
-      t.type = "EQUALS";
-      t.value = "=";
-      t.index = column_counter;
-      tokens.push_back(t);
-      column_counter++;
-      i++;
-      }
 
     else if (source[i] == '.'){
       Token t;
@@ -174,8 +184,12 @@ void Lexer::tokenize(){
 
     else if (source[i] == '"'){
       Token t;
-      t.type = "DQUOTE";
-      t.value = "\"";
+      t.type = "StringLiteral";
+      i++;
+      while (i < source.size() && source[i] != '"'){
+        t.value += source[i];
+        i++;
+      }
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
@@ -184,8 +198,12 @@ void Lexer::tokenize(){
 
     else if (source[i] == '\''){
       Token t;
-      t.type = "QUOTE";
-      t.value = "'";
+      t.type = "StringLiteral";
+      i++;
+      while (i < source.size() && source[i] != '\''){
+        t.value += source[i];
+        i++;
+      }
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;
@@ -195,7 +213,7 @@ void Lexer::tokenize(){
 
     else if (source[i] == '+' || source[i] == '-' || source[i] == '*' || source[i] == '/'){
       Token t;
-      t.type = "OPERATOR";
+      t.type = "Operation";
       t.value = string(1, source[i]);
       t.index = column_counter;
       tokens.push_back(t);
@@ -213,7 +231,7 @@ void Lexer::tokenize(){
       i++;
     }
   }
-
+return tokens; 
 }
 
 
@@ -261,19 +279,19 @@ void Lexer::count_tokens(){
   int newline_counter = 0;
   int operator_token_counter = 0;
   for (int k = tokens.size() - 1; k >= 0; k--){
-      if (tokens[k].type == "LETTER"){
+      if (tokens[k].type == "Identifier"){
         letter_token_counter++;
       }
-      else if (tokens[k].type == "NUMBER"){
+      else if (tokens[k].type == "Number"){
         digit_token_counter++;
       }
       else if (tokens[k].type == "NEWLINE"){
         newline_counter++;
       }
-      else if (tokens[k].type == "SPACE"){
+      else if (tokens[k].type == "Space"){
         space_token_counter++;
       }
-      else if (tokens[k].type == "OPERATOR"){
+      else if (tokens[k].type == "Operation"){
         operator_token_counter++;
       }
       else{ 

@@ -10,7 +10,7 @@ Parser::Parser(const vector<Token>& t) : tokens(t) {
 vector<Token> Parser::stripWhitespaces() {
   vector<Token> filtered_tokens;
   for (int i = 0; i < tokens.size(); i++){
-    if (tokens[i].type != "SPACE" && tokens[i].type != "NEWLINE"){
+    if (tokens[i].type != "Space" && tokens[i].type != "NEWLINE"){
       filtered_tokens.push_back(tokens[i]);
     }
   }
@@ -18,29 +18,20 @@ vector<Token> Parser::stripWhitespaces() {
 }
 
 
-vector<ASTnode> Parser::parse_input() {
+vector<ASTnode> Parser::parse_input(vector<Token> tokens) {
   vector<Token> filtered_tokens = stripWhitespaces();
   vector<ASTnode> tree;
-  for (int j = 0; j < filtered_tokens.size(); j++) {
-    ASTnode node;
-    if (filtered_tokens[j].type == "LETTER" && filtered_tokens[j+1].type == "EQUALS"){
-      current += 2;
-      node.type = "Variable";
-      node.value = filtered_tokens[j].value;
-      node.children.push_back(check_variable_assignment(filtered_tokens, j));
-      tree.push_back(node);
+  while (current < filtered_tokens.size()) {
+    if (filtered_tokens[current].type == "EOL") {
+      current++;
     }
-    else if ((filtered_tokens[j].type == "LETTER" || filtered_tokens[j].type == "NUMBER") && filtered_tokens[j+1].type == "OPERATOR"){
-      node.type = "Operation";
-      node.value = filtered_tokens[j].value;
-      tree.push_back(node);
+    else if (filtered_tokens[current].type == "Identifier" && filtered_tokens[current + 1].type == "EQUALS"){
+      tree.push_back(check_assignment(filtered_tokens));
     }
-    else if ((filtered_tokens[j].type == "LETTER" || filtered_tokens[j].type == "NUMBER") && filtered_tokens[j+1].type == "COMPARATOR"){
-      string temp_string = filtered_tokens[j].value + filtered_tokens[j+1].value + filtered_tokens[j+2].value;
-      node.type = "Compare";
-      node.value = temp_string;
-      tree.push_back(node);
+    else {
+      current++;
     }
+    //tree.push_back(check_function(filtered_tokens));
   }
   return tree;
 }
@@ -50,49 +41,92 @@ ASTnode Parser::creat_tree() {
   ASTnode root;
   root.type = "Program";
   root.value = "Main";
-  root.children = parse_input();
+  root.children = parse_input(tokens);
   return root;
 }
 
 
-ASTnode Parser::check_variable_assignment(vector<Token> tokens, int j) {
-  ASTnode variable_assignment;
-  int depth = 1;
-  for (int i = (j+2); i < tokens.size();){
+ASTnode Parser::check_assignment(vector<Token> tokens) {
+    ASTnode node;
+    node.type = tokens[current].type;
+    node.value = tokens[current].value;
+    current += 2;
+    node.children.push_back(check_expression(tokens));
+    return node;
+}
+
+
+ASTnode Parser::check_expression(vector<Token> tokens) {
+  ASTnode node;
+  node.value = tokens[current].value;
+  node.type = tokens[current].type;
+  current++;
+
+  if (current < tokens.size() && tokens[current].type == "Keyword"){
+    ASTnode assignment_node;
+    assignment_node.type = tokens[current].type;
+    assignment_node.value = tokens[current].value;
     current++;
-    if (tokens[i].type == "SEMICOLON"){
-      i++;
-      return variable_assignment;
+
+    assignment_node.children.push_back(check_expression(tokens));
+
+    return assignment_node;
+  }
+
+
+  else if (current < tokens.size() && tokens[current].type == "DOT"){
+    ASTnode method_node;
+    method_node.type = "ReturnType";
+    method_node.value = tokens[current-1].value;
+    current++;
+    ASTnode expression_node;
+    expression_node.type = tokens[current].type;
+    expression_node.value = tokens[current].value;
+    current++;
+    current++;
+    while (current < tokens.size() && tokens[current].type != "RPAREN"){
+      expression_node.children.push_back(check_expression(tokens));
     }
-    else {
-      variable_assignment.type = "Assignment";
-      while (tokens[i].type != "SEMICOLON"){
-        depth++;
-        variable_assignment.value += tokens[i].value;
-        i++;
-      }
+    if (tokens[current].type == "RPAREN"){
       current++;
-      variable_assignment.children.push_back(check_comparator(tokens, i, depth));
     }
-  }
-  return variable_assignment;
-}
+    method_node.children.push_back(expression_node);
+    return method_node;
 
-ASTnode Parser::check_comparator(vector<Token> tokens, int j, int depth){
-  ASTnode comparator_node;
-  for (int c = j; c < tokens.size(); c++) {
+  }
+
+
+  else if (tokens[current].type == "LPAREN"){
     current++;
-    if ((tokens[c].type == "LETTER" || tokens[c].type == "NUMBER") && tokens[c+1].type == "COMPARATOR"){
-      string temp_string = tokens[c].value + tokens[c+1].value + tokens[c+2].value;
-      comparator_node.type = "Compare";
-      comparator_node.value = temp_string;
-    }
   }
-  return comparator_node;
-}
 
-int Parser::grab_current(){
-  return current;
+
+  else if (current < tokens.size() && tokens[current].type == "Operation"){
+    ASTnode assignment_node;
+
+    assignment_node.type = tokens[current].type;
+    assignment_node.value = tokens[current].value;
+    current++;
+    assignment_node.children.push_back(node);
+    assignment_node.children.push_back(check_expression(tokens));
+
+    return assignment_node;
+  }
+
+
+
+  else if (current < tokens.size() && tokens[current].type == "Comparison"){
+    ASTnode assignment_node;
+
+    assignment_node.type = tokens[current].type;
+    assignment_node.value = tokens[current].value;
+    current++;
+    assignment_node.children.push_back(node);
+    assignment_node.children.push_back(check_expression(tokens));
+
+    return assignment_node;
+  }
+  return node;
 }
 
 
@@ -104,15 +138,13 @@ void Parser::print_tree(ASTnode node, int depth){
   }
 }
 
-
 void Parser::print_clean_tokens() {
   for (int i = 0; i < tokens.size(); i++){
-    if (tokens[i].type != "SPACE" && tokens[i].type != "NEWLINE"){
+    if (tokens[i].type != "Space" && tokens[i].type != "NEWLINE"){
       cout << tokens[i].type << ": " << tokens[i].value << " | Index: " << tokens[i].index << endl;
     }
   }
 }
-
 
 void Parser::print_all_tokens() {
   cout << "---" << endl;

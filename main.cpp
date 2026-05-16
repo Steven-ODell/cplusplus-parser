@@ -1,10 +1,11 @@
 #include "lexer.h"
 #include "ast.h"
+#include "evaluate.cpp"
 #include <iostream>
 
 int main() {
-  std::cout << "String to tokenize:\n" << "run = true;\nTestString = 'Hello';\nTestString = string.add('Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 5;\nresult = 5 > 3;\na = x + b;" << std::endl;
-  std::string input_string = "run = true;\nTestString = 'Hello';\nTestString = string.add('Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 5;\nresult = 5 > 3;\na = x + b;";
+  std::cout << "String to tokenize:\n" << "run = true;\nTestString = 'Hello';\nTestString = string.add(' Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 3;\nresult = x <= 3;\na = x + b;" << std::endl;
+  std::string input_string = "run = true;\nTestString = 'Hello';\nTestString = string.add(' Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 3;\nresult = x <= 3;\na = x + b;";
   
   //load the string into the lexer
   Lexer lexer(input_string);
@@ -20,12 +21,19 @@ int main() {
   Parser parser(lexer.getTokens());
   
   //unneeded way to print the cleaned tokens
-  parser.print_clean_tokens();
+  //parser.print_clean_tokens();
 
   //print non clean tokens
   //parser.print_all_tokens();
-  
-  parser.print_tree(parser.creat_tree(), 0);
+  ASTnode tree = parser.creat_tree() ;
+  parser.print_tree(tree, 0);
 
+  for (int i = 0; i < tree.children.size(); i++){
+    evaluate(tree.children[i]);
+  }
+
+  for (const std::pair<std::string, std::string>& entry : memory) {
+    std::cout << entry.first << " = " << entry.second << std::endl;
+  }
   return 0;
 }

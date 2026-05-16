@@ -4,8 +4,10 @@
 #include <iostream>
 
 int main() {
-  std::cout << "String to tokenize:\n" << "run = true;\nTestString = 'Hello';\nTestString = string.add(' Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 3;\nresult = x <= 3;\na = x + b;\nif (result) {x = 5};" << std::endl;
-  std::string input_string = "run = true;\nTestString = 'Hello';\nTestString = string.add(' Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 3;\nresult = x <= 3;\na = x + b;\nif (result) {x = 5};";
+  //std::cout << "String to tokenize:\n" << "run = true;\nTestString = 'Hello';\nTestString = string.add(' Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 3;\nresult = x > 3;\na = x + b;\nif (result) {x = 5};\nif (result) {\nb = int.compute(x + a)\n}\nelse {\nb = int.compute(x * a)\n};" << std::endl;
+  std::cout << "String to tokenize:\n" << "score = 85; passing = score > 80; grade = 'F'; if (passing) {grade = 'A'} else {grade = 'C'}; bonus = int.compute(score + 15); label = string.add(' points');" << std::endl;
+  std::string input_string = "score = 85; passing = score > 80; grade = 'F'; if (passing) {grade = 'A'} else {grade = 'C'}; bonus = int.compute(score + 15); label = string.add(' points');";
+  //std::string input_string = "run = true;\nTestString = 'Hello';\nTestString = string.add(' Test');\nTestStringCount = int.count(TestString);\nb = int.compute(5 + 3);\nx = 3;\nresult = x > 3;\na = x + b;\nif (result) {x = 5};\nif (result) {\nb = int.compute(x + a)\n}\nelse {\nb = int.compute(x * a)\n};";
   
   //load the string into the lexer
   Lexer lexer(input_string);

@@ -1,14 +1,12 @@
 #include "ast.h"
 #include <string>
 #include <map>
-#include <iostream>
 
 using namespace std;
 
 map<string, string> memory;
 
 string evaluate(ASTnode node, string context = ""){
-  cout << "Evaluating...." << node.type << ": " << node.value << endl;
   if (node.type == "Identifier") {
     if (node.children.size() > 0) {
       string result = evaluate(node.children[0], node.value);
@@ -75,7 +73,6 @@ string evaluate(ASTnode node, string context = ""){
     if (node.value == "add"){
       string l = memory[context];
       string r = evaluate(node.children[0]);
-      if(l.empty() || r.empty()) return "";
       return l+r;
     }
     else if (node.value == "compute"){
@@ -96,6 +93,20 @@ string evaluate(ASTnode node, string context = ""){
     if (node.value == "-") return to_string(l-r);
     if (node.value == "*") return to_string(l*r);
     if (node.value == "/") return to_string(l/r);
+  }
+
+  else if (node.type == "If_Check"){
+    string condition = memory[node.value];
+    if (condition == "true") {
+      for (int i = 0; i < node.children[0].children.size(); i++){
+        evaluate(node.children[0].children[i]);
+      }
+    }
+    else if (node.children.size() > 1) {
+      for (int i = 0; i < node.children[1].children.size(); i++){
+        evaluate(node.children[1].children[i]);
+      }
+    }
   }
   return "";
 }

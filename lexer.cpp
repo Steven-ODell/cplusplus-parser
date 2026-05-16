@@ -36,6 +36,9 @@ vector<Token> Lexer::tokenize(){
       else if (word == "if"){
         t.type = "If_Check";
       }
+      else if (word == "else"){
+        t.type = "Else_Check";
+      }
       else {
         t.type = "Identifier";
       }

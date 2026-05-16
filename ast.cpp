@@ -130,10 +130,9 @@ ASTnode Parser::check_expression(vector<Token> tokens) {
 ASTnode Parser::check_if(vector<Token> tokens){
   ASTnode assignment_node;
   assignment_node.type = tokens[current].type;
-  string if_condition = grab_condition(tokens);
-  assignment_node.value = if_condition;
+  assignment_node.value = grab_condition(tokens);
   ASTnode If_node;
-  If_node.type = "If_Body";
+  If_node.type = "IfBody";
   while (current < tokens.size() && tokens[current].type != "RC_BRACKET"){
     if (tokens[current].type == "EOL"){
       current++;
@@ -146,10 +145,33 @@ ASTnode Parser::check_if(vector<Token> tokens){
     }
   }
   if (tokens[current].type == "RC_BRACKET"){
-    current++;
+  current++;
   }
   assignment_node.children.push_back(If_node);
 
+  if (current < tokens.size() && tokens[current].type == "Else_Check"){
+    current++;
+    if (tokens[current].type == "LC_BRACKET") {
+      current++;
+    }
+    ASTnode Else_node;
+    Else_node.type = "ElseBody";
+    while (current < tokens.size() && tokens[current].type != "RC_BRACKET"){
+      if (tokens[current].type == "EOL"){
+        current++;
+      }
+      else if (current < tokens.size() && tokens[current].type == "Identifier" && tokens[current+1].type == "EQUALS") {
+        Else_node.children.push_back(check_assignment(tokens));
+      }
+      else {
+        current++;
+      }
+    }
+    if (tokens[current].type == "RC_BRACKET"){
+    current++;
+    }
+    assignment_node.children.push_back(Else_node);
+  }
   return assignment_node;
 }
 

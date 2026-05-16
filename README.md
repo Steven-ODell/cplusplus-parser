@@ -1,92 +1,55 @@
-# Custom C++ Parser & Interpreter Pipeline
+# C++ Interpreter Pipeline
 
-A lightweight, from-scratch lexical analyzer, recursive AST parser, and tree-evaluating interpreter built in C++. This project demonstrates a complete compilation pipeline—transforming raw source strings into structural code trees and executing them via a global runtime state.
+A from-scratch lexer, parser, and evaluator written in C++. No parsing libraries. Built to understand how language pipelines actually work.
 
-## Features
+## What it does
 
-* **Lexer (Tokenizer):** Chunks raw string input into a strongly-typed stream of tokens while stripping white spaces and tracking text indices.
-* **Abstract Syntax Tree Generator (Parser):** Processes the flat token stream using a predictive descent structure to handle variable assignments, conditional scoping, execution blocks, and method abstractions.
-* **Tree Evaluator (Interpreter):** Recursively traverses the generated AST to handle execution branches, basic arithmetic, numerical comparisons, and global runtime memory tracking.
-* **Built-in Testing Suite:** Main execution targets production-style script testing lines, verifying complex state tracking through multiple mutations.
+Takes a source string, tokenizes it, builds an AST, and evaluates it — storing variable state in a runtime memory map.
 
----
-
-## Architectural Overview
-
-The code follows the classic engine design of modern interpreters:
-
-```text
-[Raw Source String] 
-         │
-         ▼
-    (  Lexer  )     ──> Breaks characters into Token structures
-         │
-         ▼
- [Flat Token Stream] 
-         │
-         ▼
-    (  Parser )     ──> Constructs structural hierarchy and tracks contexts
-         │
-         ▼
- [Abstract Syntax Tree] 
-         │
-         ▼
-   ( Interpreter )  ──> Evaluates nodes recursively and mutates runtime memory
-```text
 ```
-# File Structure
+source string → lexer → token stream → parser → AST → evaluator → memory state
+```
 
-lexer.h / lexer.cpp: Defines token patterns, strings/numeric literals, structural syntax indicators ({, }, (, )), and identifier classification logic.
+## Supported syntax
 
-ast.h / ast.cpp: Manages the recursive ASTnode schema. Houses structural evaluation blocks including check_expression, variable assignment tracking, and lookahead branch evaluation for loops and conditional trees.
+```
+x = 5;
+result = x > 3;
+label = 'Hello';
+label = string.add(' World');
+count = int.count(label);
+b = int.compute(x + 3);
+if (result) { x = 10 } else { x = 0 };
+```
 
-evaluate.cpp: The execution runtime processor. Evaluates tree leaf nodes, resolves operators (+, -, *, /), handles string manipulations, compares variables, and isolates true/false tracking for execution path redirection.
+Supported types: integers, strings, booleans.
+Supported operations: `+` `-` `*` `/` `>` `<` `>=` `<=`
+Built-in functions: `compute` (math), `add` (string concat), `count` (string length)
 
-main.cpp: Entry execution hub containing simulation test paths and live debug dump logic for the generated abstract syntax tree layout and internal memory registers.
+## File structure
 
-# Getting Started
-Prerequisites
-A C++17 compatible compiler (GCC, Clang, or MSVC)
+- `lexer.h / lexer.cpp` — tokenizer, handles all character classification and string literal capture
+- `ast.h / ast.cpp` — recursive descent parser, builds the AST from the token stream
+- `evaluate.cpp` — walks the AST recursively and executes each node, writing results to a `map<string, string>` memory table
+- `main.cpp` — wires everything together and prints the tree and final memory state
 
-CMake (Version 3.10 or higher recommended)
+## Build
 
-# Build Instructions
-Generate the build directory configuration using CMake:
-
-Bash
+```bash
 cmake -B build -S .
-Compile the binaries:
-
-Bash
 cmake --build build
-Run the compiled executable target:
-
-Bash
-./build/cplusplus_parser
-
-## Supported Code Patterns
-
-The runtime pipeline is capable of parsing and executing structured operations such as:
-
-```javascript
-score = 85; 
-passing = score > 80; 
-grade = 'F'; 
-
-if (passing) {
-    grade = 'A'
-} else {
-    grade = 'C'
-}; 
-
-bonus = int.compute(score + 15); 
-label = string.add(' points');bonus = int.compute(score + 15); 
-label = string.add(' points');
-``javascript`
+./build/first_cmake_program
 ```
-# Future Enhancements Roadmap
-Operator Dominance Upgrades: Restructuring the expression loop framework to enforce formal precedence tracking (PEMDAS) via Pratt Parsing configurations.
 
-Unary Operators: Introducing single-operand indicators such as the logical negation operator (!) for runtime switch evaluations.
+## What I learned building this
 
-AST Expression Conditioning: Upgrading the condition parser loop from tracking a raw identifier string block to receiving full execution sub-trees natively.
+- How a lexer handles ambiguous characters (e.g. `=` vs `==`, unterminated strings)
+- How a recursive descent parser tracks position through a token stream
+- Why operator precedence requires restructuring the expression parser (not implemented — planned for v2)
+- How an evaluator uses a symbol table to track runtime state across statements
+
+## Planned for v2
+
+- PEMDAS operator precedence via precedence climbing
+- Unary `!` / NOT operator
+- Proper test input file instead of hardcoded strings in main

@@ -25,6 +25,8 @@ public:
   ASTnode check_expression(vector<Token>);
   ASTnode check_comparator(vector<Token>);
   ASTnode check_function(vector<Token>);
+  ASTnode check_if(vector<Token>);
+  string grab_condition(vector<Token>);
   void print_clean_tokens();
   void print_all_tokens();
   void print_tree(ASTnode node, int depth);

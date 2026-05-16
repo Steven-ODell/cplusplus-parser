@@ -28,6 +28,9 @@ vector<ASTnode> Parser::parse_input(vector<Token> tokens) {
     else if (filtered_tokens[current].type == "Identifier" && filtered_tokens[current + 1].type == "EQUALS"){
       tree.push_back(check_assignment(filtered_tokens));
     }
+    else if (filtered_tokens[current].type == "If_Check"){
+      tree.push_back(check_if(filtered_tokens));
+    }
     else {
       current++;
     }
@@ -73,7 +76,6 @@ ASTnode Parser::check_expression(vector<Token> tokens) {
     return assignment_node;
   }
 
-
   else if (current < tokens.size() && tokens[current].type == "DOT"){
     ASTnode method_node;
     method_node.type = "ReturnType";
@@ -84,22 +86,19 @@ ASTnode Parser::check_expression(vector<Token> tokens) {
     expression_node.value = tokens[current].value;
     current++;
     current++;
-    while (current < tokens.size() && tokens[current].type != "RPAREN"){
+    while (current < tokens.size() && tokens[current].type != "Rparen"){
       expression_node.children.push_back(check_expression(tokens));
     }
-    if (tokens[current].type == "RPAREN"){
+    if (tokens[current].type == "Rparen"){
       current++;
     }
     method_node.children.push_back(expression_node);
     return method_node;
-
   }
 
-
-  else if (tokens[current].type == "LPAREN"){
+  else if (tokens[current].type == "Lparen"){
     current++;
   }
-
 
   else if (current < tokens.size() && tokens[current].type == "Operation"){
     ASTnode assignment_node;
@@ -112,8 +111,6 @@ ASTnode Parser::check_expression(vector<Token> tokens) {
 
     return assignment_node;
   }
-
-
 
   else if (current < tokens.size() && tokens[current].type == "Comparison"){
     ASTnode assignment_node;
@@ -129,6 +126,48 @@ ASTnode Parser::check_expression(vector<Token> tokens) {
   return node;
 }
 
+
+ASTnode Parser::check_if(vector<Token> tokens){
+  ASTnode assignment_node;
+  assignment_node.type = tokens[current].type;
+  string if_condition = grab_condition(tokens);
+  assignment_node.value = if_condition;
+  ASTnode If_node;
+  If_node.type = "If_Body";
+  while (current < tokens.size() && tokens[current].type != "RC_BRACKET"){
+    if (tokens[current].type == "EOL"){
+      current++;
+    }
+    else if (tokens[current].type == "Identifier" && tokens[current + 1].type == "EQUALS") {
+      If_node.children.push_back(check_assignment(tokens));
+    }
+    else {
+      current++;
+    }
+  }
+  if (tokens[current].type == "RC_BRACKET"){
+    current++;
+  }
+  assignment_node.children.push_back(If_node);
+
+  return assignment_node;
+}
+
+string Parser::grab_condition(vector<Token> tokens){
+  string condition;
+  current++;
+  if (tokens[current].type == "Lparen"){
+    current++;
+  }
+  while (current < tokens.size() && tokens[current].type != "Rparen"){
+    condition += tokens[current].value;
+    current++;
+  }
+  if (tokens[current].type == "Rparen"){
+    current++;
+  }
+  return condition; 
+}
 
 void Parser::print_tree(ASTnode node, int depth){
   for (int d = depth; d > 0; d--) cout << "  ";

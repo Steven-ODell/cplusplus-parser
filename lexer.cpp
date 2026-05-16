@@ -33,6 +33,9 @@ vector<Token> Lexer::tokenize(){
       else if (word == "compute" || word == "count" || word == "add"){
         t.type = "Function";
       }
+      else if (word == "if"){
+        t.type = "If_Check";
+      }
       else {
         t.type = "Identifier";
       }
@@ -83,7 +86,7 @@ vector<Token> Lexer::tokenize(){
     
     else if (source[i] == '('){
       Token t;
-      t.type = "LPAREN";
+      t.type = "Lparen";
       t.value = "(";
       t.index = column_counter;
       tokens.push_back(t);
@@ -94,7 +97,7 @@ vector<Token> Lexer::tokenize(){
 
     else if (source[i] == ')'){
       Token t;
-      t.type = "RPAREN";
+      t.type = "Rparen";
       t.value = ")";
       t.index = column_counter;
       tokens.push_back(t);
@@ -154,7 +157,7 @@ vector<Token> Lexer::tokenize(){
 
     else if (source[i] == '['){
       Token t;
-      t.type = "LBRACKET";
+      t.type = "L_BRACKET";
       t.value = "[";
       t.index = column_counter;
       tokens.push_back(t);
@@ -164,8 +167,28 @@ vector<Token> Lexer::tokenize(){
 
     else if (source[i] == ']'){
       Token t;
-      t.type = "RBRACKET";
+      t.type = "R_BRACKET";
       t.value = "]";
+      t.index = column_counter;
+      tokens.push_back(t);
+      column_counter++;
+      i++;
+      }
+  
+    else if (source[i] == '{'){
+      Token t;
+      t.type = "LC_BRACKET";
+      t.value = "{";
+      t.index = column_counter;
+      tokens.push_back(t);
+      column_counter++;
+      i++;
+      }
+  
+    else if (source[i] == '}'){
+      Token t;
+      t.type = "RC_BRACKET";
+      t.value = "}";
       t.index = column_counter;
       tokens.push_back(t);
       column_counter++;

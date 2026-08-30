@@ -22,7 +22,7 @@ int main() {
   //parse the tokens after they are created
   Parser parser(lexer.getTokens());
   
-  //unneeded way to print the cleaned tokens
+  //way to print the cleaned tokens
   parser.print_clean_tokens();
 
   //print non clean tokens

@@ -1,10 +1,16 @@
+//bring in the header which allows access to the class and struct
 #include "lexer.h"
 #include <iostream>
 #include <vector>
 
+//Define the namespace so i dont need std::
 using namespace std;
 
 
+//Building out the details for the lexer.h for the private data 
+//that will be "global" within the class itself but not allowed
+//outside the class
+//Gets called in main to fill "source" with the input stream
 Lexer::Lexer(string input){
   source = input;
   line_counter = 0;
@@ -12,9 +18,14 @@ Lexer::Lexer(string input){
 }
 
 
+//Create tokens........
+//Go and walk the string and based on your grammar build a flat
+//array of tokens that have a type and value.
 vector<Token> Lexer::tokenize(){
   line_counter = 0;
 
+  //size_t is what is needed for the return type of ".length()"
+  //(unsigned vs int(signed))
   for (size_t i = 0; i < source.length();){
     string word;
 

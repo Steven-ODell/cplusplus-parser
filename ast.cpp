@@ -1,6 +1,5 @@
 #include "ast.h"
 #include <iostream>
-#include <vector>
 
 Parser::Parser(const vector<Token>& t) : tokens(t) {
   current = 0;

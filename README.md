@@ -17,7 +17,7 @@ x = 5;
 result = x > 3;
 label = 'Hello';
 label = string.add(' World');
-count = int.count(label);
+labelcount = int.count(label);
 b = int.compute(x + 3);
 if (result) { x = 10 } else { x = 0 };
 ```
